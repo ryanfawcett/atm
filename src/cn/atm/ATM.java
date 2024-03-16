@@ -26,10 +26,11 @@ public class ATM {
      * 启动ATM系统，展示欢迎界面
      */
     public void start() {
-        while (true) {
+        do {
             System.out.println("---欢迎您进入到了ATM系统---");
             System.out.println("1、用户登录");
             System.out.println("2、用户开户");
+            System.out.println("3、退出");
             System.out.println("请选择：");
             int command = scanner.nextInt();
             switch (command) {
@@ -40,10 +41,14 @@ public class ATM {
                     // 用户开户
                     createAccount();
                     break;
+                case 3:
+                    // 退出系统
+                    System.exit(0);
+                    break;
                 default:
                     System.out.println("没有该操作～～");
             }
-        }
+        } while (true);
     }
 
     /**
