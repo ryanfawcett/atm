@@ -2,6 +2,7 @@ package cn.atm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -36,6 +37,7 @@ public class ATM {
             switch (command) {
                 case 1:
                     // 用户登录
+                    login();
                     break;
                 case 2:
                     // 用户开户
@@ -126,5 +128,48 @@ public class ATM {
             cardId.append(unit);
         }
         return cardId.toString();
+    }
+
+    /**
+     * 登录
+     */
+    private void login() {
+        if (accounts.isEmpty()) {
+            System.out.println("您好，当前系统无账户～～");
+            return;
+        }
+
+        Account account;
+        while (true) {
+            System.out.println("请输入您的卡号");
+            String cardId = scanner.next();
+            // 判断当前系统中是否存在该卡号
+            Optional<Account> accountOpt = getAccountByCardId(cardId);
+            if (accountOpt.isPresent()) {
+                account = accountOpt.get();
+                break;
+            }
+            System.out.println("您输入的卡号不存在！");
+        }
+
+        while (true) {
+            System.out.println("请输入您的密码");
+            String password = scanner.next();
+            // 验证密码
+            if (password.equals(account.getPassword())) {
+                System.out.println("恭喜您" + account.getUsername() + "，您已成功登录ATM系统！");
+                break;
+            }
+            System.out.println("您输入的密码错误！");
+        }
+    }
+
+    /**
+     * 通过卡号查找对应的账户信息
+     */
+    private Optional<Account> getAccountByCardId(String cardId) {
+        return accounts.parallelStream()
+                .filter(account -> account.getCardId().equals(cardId))
+                .findAny();
     }
 }
