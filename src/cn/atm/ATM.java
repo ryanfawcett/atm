@@ -188,7 +188,11 @@ public class ATM {
                     getAccountInfo();
                     break;
                 case 2: // 2. 存款
+                    depositMoney();
+                    break;
                 case 3: // 3. 取款
+                    drawMoney();
+                    break;
                 case 4: // 4. 转账
                 case 5: // 5. 修改密码
                 case 6: // 6. 退出
@@ -200,6 +204,45 @@ public class ATM {
                     System.out.println("对不起，您输入的操作无效！");
             }
         }
+    }
+
+    private void drawMoney() {
+        System.out.println("---取款操作---");
+        // 1. 先判断当前账户中的余额是否大于100，如果不足100元，则无法取钱
+        double currentMoney = currentAccount.getMoney();
+        if (currentMoney < 100) {
+            System.out.println("您的账户余额不足100元，无法在ATM进行取款操作，请到柜台办理业务！");
+            return;
+        }
+
+        double money;
+        while (true) {
+            System.out.println("请输入您要取出的金额：");
+            money = scanner.nextDouble();
+
+            // 2. 判断用户输入的金额是否大于当前账户设定的取现金额
+            double limit = currentAccount.getLimit();
+            if (money < limit) {
+                break;
+            }
+            System.out.println("超出每日取款限额，当前限额：" + limit);
+        }
+
+        // 3. 扣除金额
+        currentAccount.setMoney(currentMoney - money);
+        System.out.println("取款成功，当前账户余额为：" + currentAccount.getMoney());
+    }
+
+    /**
+     * 存钱
+     */
+    private void depositMoney() {
+        System.out.println("---存钱操作---");
+        System.out.println("请输入您要存入的金额：");
+        double money = scanner.nextDouble();
+
+        currentAccount.setMoney(currentAccount.getMoney() + money);
+        System.out.println("储存成功，当前账户余额为：" + currentAccount.getMoney());
     }
 
     /**
