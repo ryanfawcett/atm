@@ -222,15 +222,21 @@ public class ATM {
 
             // 2. 判断用户输入的金额是否大于当前账户设定的取现金额
             double limit = currentAccount.getLimit();
-            if (money < limit) {
-                break;
+            if (money >= limit) {
+                System.out.println("超出每日取款限额，当前限额：" + limit);
+                continue;
             }
-            System.out.println("超出每日取款限额，当前限额：" + limit);
-        }
 
-        // 3. 扣除金额
-        currentAccount.setMoney(currentMoney - money);
-        System.out.println("取款成功，当前账户余额为：" + currentAccount.getMoney());
+            // 3. 判断当前账户余额是否足够
+            if (currentMoney >= money) {
+                // 4. 如果余额充足，则开始扣款
+                currentAccount.setMoney(currentMoney - money);
+                System.out.println("取款成功，当前账户余额为：" + currentAccount.getMoney());
+                break;
+            } else {
+                System.out.println("余额不足，您的账户当前可用余额为：" + currentMoney);
+            }
+        }
     }
 
     /**
