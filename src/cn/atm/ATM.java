@@ -197,15 +197,77 @@ public class ATM {
                     transferMoney();
                     break;
                 case 5: // 5. 修改密码
+                    resetPassword();
+                    return;
                 case 6: // 6. 退出
                     System.out.println(currentAccount.getUsername() + ", 您已成功退出系统");
                     currentAccount = null;
                     return; // 退出循环
                 case 7: // 7. 注销账户
+                    if (deleteAccount()) {
+                        return;
+                    }
+                    break;
                 default:
                     System.out.println("对不起，您输入的操作无效！");
             }
         }
+    }
+
+    private void resetPassword() {
+        System.out.println("------密码重置------");
+        String currentPassword;
+        while (true) {
+            // 1. 提示用户输入当前账户密码
+            System.out.println("请输入您账户当前密码：");
+            currentPassword = scanner.next();
+
+            // 2. 判断当前密码是否正确
+            if (currentPassword.equals(currentAccount.getPassword())) {
+                break;
+            }
+            System.out.println("当前账户密码不正确！");
+        }
+
+        // 3. 提示输入新密码
+        while (true) {
+            System.out.println("请输入您的新密码");
+            String newPassword = scanner.next();
+
+            // 4. 确认新密码
+            System.out.println("请您确认新密码");
+            String confirmPassword = scanner.next();
+
+            // 5. 比较两次密码是否一致
+            if (newPassword.equals(confirmPassword)) {
+                // 6. 重置密码
+                currentAccount.setPassword(newPassword);
+                System.out.println("您的密码重置成功！");
+                return;
+            }
+
+            System.out.println("两次密码不一致！");
+        }
+
+    }
+
+    private boolean deleteAccount() {
+        System.out.println("------用户销户-----");
+        // 1. 首先询问用户是否确定要销户，如果不确定，则回到操作界面
+        System.out.println("您真的要销户? y/n");
+        String confirm = scanner.next();
+        if (!"y".equals(confirm)) {
+            return false;
+        }
+
+        // 2. 如果确定要销户，先判断账户中是否有钱，有则不允许销户，并回到操作界面
+        if (currentAccount.getMoney() > 0) {
+            System.out.println("您的账户中还有钱没有取完，不允许销户～");
+            return false;
+        }
+        // 3. 如果没钱，则完成销户，回到欢迎界面
+        accounts.remove(currentAccount);
+        return true;
     }
 
     private void transferMoney() {
