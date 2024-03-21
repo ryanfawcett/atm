@@ -194,6 +194,8 @@ public class ATM {
                     drawMoney();
                     break;
                 case 4: // 4. 转账
+                    transferMoney();
+                    break;
                 case 5: // 5. 修改密码
                 case 6: // 6. 退出
                     System.out.println(currentAccount.getUsername() + ", 您已成功退出系统");
@@ -204,6 +206,71 @@ public class ATM {
                     System.out.println("对不起，您输入的操作无效！");
             }
         }
+    }
+
+    private void transferMoney() {
+        System.out.println("---转账操作---");
+        // 1. 判断系统中是否有其他的账户
+        if (accounts.size() < 2) {
+            System.out.println("当前系统中只有你一个账户，无法为其他账户转账～");
+            return;
+        }
+
+        // 2. 判断当前账户中是否有钱
+        if (currentAccount.getMoney() == 0) {
+            System.out.println("您的账户中没有金额，无法为其他账户转账～");
+            return;
+        }
+
+        // 3. 提示用户输入要转账的账户信息
+        System.out.println("请输入需要转账的卡号信息：");
+        String transferTo = scanner.next();
+
+        // 4. 判断用户输入的账户信息是否存在
+        Optional<Account> transferAccountOpt = getAccountByCardId(transferTo);
+        // 5. 如果账户存在，还需要认证待转账用户的户主姓氏
+        transferAccountOpt.ifPresent(transferToAccount -> {
+            String username = transferToAccount.getUsername();
+            System.out.println("您当前要为*" + username.substring(1) + "转账！");
+
+            // 6. 提示用户输入户主姓氏
+            int retry = 0;
+            while (true) {
+                if (retry >= 3) {
+                    System.out.println("认证失败！");
+                    return;
+                }
+
+                System.out.println("请输入待转账用户的姓氏：");
+                String lastName = scanner.next();
+                retry++;
+
+                // 7. 验证用户输入的姓氏是否正确
+                if (lastName.equals(String.valueOf(username.charAt(0)))) {
+                    break;
+                }
+
+                System.out.println("您输入的户主姓氏错误！");
+            }
+
+            // 8. 认证成功，开始转账
+            double transferAmount;
+            while (true) {
+                // 8.1 提示用户输入转账金额
+                System.out.println("请输入转账金额：");
+                transferAmount = scanner.nextDouble();
+                // 8.2 判断用户输入的金额是否超过当前账户余额
+                double currentMoney = currentAccount.getMoney();
+                if (transferAmount <= currentMoney) {
+                    break;
+                }
+                System.out.println("您输入的转账金额超过您的余额！当前账户中的余额为：" + currentMoney);
+            }
+
+            currentAccount.setMoney(currentAccount.getMoney() - transferAmount);
+            transferToAccount.setMoney(transferToAccount.getMoney() + transferAmount);
+            System.out.println("转账成功，您的账户当前可用余额为：" + currentAccount.getMoney());
+        });
     }
 
     private void drawMoney() {
